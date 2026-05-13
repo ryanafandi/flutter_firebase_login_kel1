@@ -30,3 +30,50 @@ class RegisterCubit extends Cubit<RegisterState> {
     );
   }
 
+ void passwordChanged(String value) {
+    final password = Password.dirty(value);
+
+    emit(
+      state.copyWith(
+        password: password,
+
+        status: FormzSubmissionStatus.initial,
+
+        isValid: Formz.validate([state.email, password]),
+      ),
+    );
+  }
+
+  Future<void> register() async {
+    if (!state.isValid) return;
+
+    emit(state.copyWith(status: FormzSubmissionStatus.inProgress));
+
+    try {
+      print('REGISTER DIMULAI');
+
+      await authenticationRepository.signUp(
+        email: state.email.value,
+        password: state.password.value,
+      );
+      await authenticationRepository.signOut();
+
+      await userRepository.saveUser(email: state.email.value);
+
+      print('REGISTER BERHASIL');
+
+      emit(state.copyWith(status: FormzSubmissionStatus.success));
+
+      emit(state.copyWith(status: FormzSubmissionStatus.initial));
+    } catch (e) {
+      emit(
+        state.copyWith(
+          status: FormzSubmissionStatus.failure,
+
+          errorMessage: e.toString(),
+        ),
+      );
+      emit(state.copyWith(status: FormzSubmissionStatus.initial));
+    }
+  }
+}
