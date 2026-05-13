@@ -72,4 +72,86 @@ class RegisterForm extends StatelessWidget {
 
                         const SizedBox(height: 30),
 
-                       
+                        // EMAIL
+                        TextField(
+                          controller: emailController,
+
+                          onChanged: (value) {
+                            context.read<RegisterCubit>().emailChanged(value);
+                          },
+
+                          decoration: InputDecoration(
+                            labelText: 'Email',
+
+                            errorText: state.email.displayError != null
+                                ? 'Email tidak valid'
+                                : null,
+
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                        ),
+
+                        const SizedBox(height: 20),
+
+                        // PASSWORD
+                        TextField(
+                          controller: passwordController,
+
+                          obscureText: true,
+
+                          onChanged: (value) {
+                            context.read<RegisterCubit>().passwordChanged(
+                              value,
+                            );
+                          },
+
+                          decoration: InputDecoration(
+                            labelText: 'Password',
+
+                            errorText: state.password.displayError != null
+                                ? 'Password minimal 6 karakter'
+                                : null,
+
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                        ),
+
+                        const SizedBox(height: 30),
+
+                        SizedBox(
+                          width: double.infinity,
+
+                          height: 50,
+
+                          child: ElevatedButton(
+                            onPressed:
+                                !state.isValid ||
+                                    state.status ==
+                                        FormzSubmissionStatus.inProgress
+                                ? null
+                                : () {
+                                    context.read<RegisterCubit>().register();
+                                  },
+
+                            child:
+                                state.status == FormzSubmissionStatus.inProgress
+                                ? const CircularProgressIndicator()
+                                : const Text('Register'),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
